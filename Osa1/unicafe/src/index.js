@@ -85,7 +85,6 @@ const App = (props) => {
                 bad={bad} total={total} 
                 average={value/total} positive={100 * good/total}  
             />   
-
         </div>
     )
 }
