@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Person from './components/Person'
+import personService from './services/persons'
+import './index.css'
 
 const Filter = (props) => {
     return (
@@ -39,57 +41,122 @@ const Persons = (props) => {
         <ul>{ props.rows }</ul>
     )
 }
+
+const Notification = ( { errorMessage, message } ) => {
+
+    if (errorMessage === null & message === null) {
+        console.log('??')
+        return null
+    } else if (message === null) {
+        return (
+            <div className="error">
+                {errorMessage}
+            </div>
+        )
+    } else if (errorMessage === null) {
+        return (
+            <div className="added">
+              {message}
+            </div>
+        )
+    }
+    
+}
+
 const App = () => {
-    const [ persons, setPersons ] = useState([
-        { name: 'Matti Meikalainen', 
-          number: '034-06679860',
-          id: 1,
-        },
-        {
-            name: 'Ada Lovelace',
-            number: '02349134-123',
-            id: 2,
-        },
-        {
-            name: 'Outi Savolainen',
-            number: '0808022-132-22',
-            id: 3,
-        },
-        {
-            name: 'Kvothe, you may know me',
-            number: '132',
-            id: 4,
-        }
-    ])
+    const [persons, setPersons] = useState([])
+    const [errorMessage, setErrorMessage] = useState(null)
+    const [message, setMessage] = useState(null)
     const [ newName, SetNewName ] = useState('')
     const [ newNumber, SetNewNumber] = useState('')
     const [ filterData, setFilterData] = useState('')
-    const [ showAll, setShowAll] = useState('true')
+    const [ showAll, setShowAll] = useState(true)
+
+    useEffect (() => {
+        console.log('effect')
+        personService
+            .getAll()
+            .then( initialPersons => {
+                console.log('promise fulfilled')
+                setPersons(initialPersons)
+            })
+    }, [])
+
     
+    const showMessage = message => {
+        setMessage(`${message}`)
+        timeout()  
+    }
+
+    const showErrorMessage = errorMessage => {
+        setErrorMessage(`${errorMessage}`)
+        timeout() 
+    }
+
+    const timeout = () => {
+        setTimeout(() => {
+            setMessage(null)
+            setErrorMessage(null)
+            }, 3000);
+        SetNewName('')
+        SetNewNumber('')  
+    }
 
     const addName = (event) => {
         event.preventDefault()
         const isOnList = persons.find(function(element) {
             return element.name === newName
-
         })
         console.log(isOnList)
         if (typeof isOnList !== 'undefined' && isOnList.name === newName) {
-            window.alert(`${newName} is already added`)
-
-        } else {
+            const result = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+            if (result) {
+                const person = persons.filter(p => p.id === isOnList.id)
+                const changendPerson = { ...person, name: isOnList.name, number: newNumber}
+                personService
+                  .update(isOnList.id, changendPerson)
+                  .then(updatetPerson => {
+                    showMessage(`Number changed for ${newName}`)
+                    setPersons(persons.map(person => person.id !== isOnList.id ? person : updatetPerson))
+                  })
+                  .catch(error => {
+                    showErrorMessage(`Information of ${isOnList.name} has already been removed from server.`)
+                    setPersons(persons.filter(p => p.id !== isOnList.id))
+                })  
+            }
+        } else {    
             const nameObject = {
                 name: newName,
-                number: newNumber,
-                id: persons.length + 1
+                number: newNumber
             }
-            setPersons(persons.concat(nameObject))
-            console.log('add clicked', event.target)
-            SetNewName('')
-            SetNewNumber('')
+            console.log('???')
+            personService
+              .create(nameObject)
+              .then(returnedNote => {
+                showMessage(`Added ${newName}`)  
+               setPersons(persons.concat(returnedNote))
+               })
         }    
     }
     
+    const removeFromList = (id) => {
+        const person = persons.find(n => n.id === id)
+        console.log(person)
+        const result = window.confirm(`Delete ${person.name} ? `)
+        if(result) {
+            personService
+            .remove(person.id)
+            .then(response => {
+                showMessage(`${person.name} was deleted from server.`) 
+                console.log(response.data)
+                setPersons(persons.filter(p => p.id !== person.id))
+            })
+            .catch(error => {
+                showErrorMessage(`${person.name} has already been removed from server.`)
+                setPersons(persons.filter(p => p.id !== person.id))
+            })
+        } 
+    }
     const handleNewName = (event) => {
         console.log(event.target.value)
         SetNewName(event.target.value)
@@ -104,12 +171,16 @@ const App = () => {
       : persons.filter(person => person.name.toLowerCase().includes(filterData.toLowerCase()))
 
     const rows = () => filterPersons.map(person => 
-        <Person key={person.id} person={person} />
+        <Person 
+        key={person.id}
+        person={person} 
+        removeContact={() => removeFromList(person.id)} 
+        />
     )
     const handleFilter = (event) => {
         setFilterData(event.target.value)
         console.log(event.target.value)
-        if (event.target.value !== '' && showAll === 'true') {
+        if (event.target.value !== '' && showAll === true) { 
             setShowAll(!showAll)
         } else if (event.target.value === '') {
             setShowAll(showAll)
@@ -119,6 +190,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification errorMessage={errorMessage} message={message}/>
             <Filter filterData={filterData} handleFilter={handleFilter}/>
             <h2>Add a new contact</h2>
             <PersonForm addName={addName} newName={newName}
