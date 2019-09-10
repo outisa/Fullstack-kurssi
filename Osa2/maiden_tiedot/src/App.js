@@ -28,9 +28,9 @@ const Land = ( {land, weather, condition} ) => {
       <ul>{land.languages.map(language => <li key={language.name}>{language.name}</li>)}
       </ul><img src={land.flag} alt='flag' style={{width:200}}/>
       <h2>Weather in {land.capital}:</h2>
-      <p><strong>temperature:</strong> {weather.temp_c} Celsius</p>
-      <img src={condition.icon} alt={condition.text}/>
-      <p><strong>wind:</strong> {weather.wind_kph} kph direction {weather.wind_dir}</p>
+      <p><strong>temperature:</strong> {weather.temperature} Celsius</p>
+      <img src={weather.weather_icons} alt={weather.weather_descriptions}/>
+      <p><strong>wind:</strong> {weather.wind_speed} kph direction {weather.wind_dir}</p>
     </div>
     )
 } 
@@ -40,7 +40,6 @@ const App = () => {
   const [filterData, setFilterData] = useState('')
   const [show, setShow] = useState(true)
   const [weather, setWeather] = useState([])
-  const [condition, setCondition] = useState([])
  
   useEffect(( ) => {
     console.log('effect')
@@ -67,21 +66,20 @@ const App = () => {
         <p>Too many matches, specify another filter</p>
       )
     } else if (filtered.length === 1) {
-      if (weather.length === 0) {
-          const land = filterLands.find(land => land)
-          console.log(land)
+        const land = filterLands.find(land => land)
+        console.log(land)
+        if (weather.length === 0) {
           axios
-          // the next url needs a valid key, otherwise this function is not working properly.
-          .get(`https://api.apixu.com/v1/current.json?key=<Needed a valid key to function>=${land.capital}`)
+          // the next url needs a valid key, otherwise this application is not working properly.
+          .get(`http://api.weatherstack.com/current?access_key=&query=${land.capital}`)
           .then(response => {
             console.log(response.data.current)
             setWeather(response.data.current)
-            setCondition(response.data.current.condition)
           })
-      } 
+        }
       return (
         filterLands.map(land =>
-        <Land key={land.name} land={land} weather={weather} condition={condition}/>)
+        <Land key={land.name} land={land} weather={weather}/>)
       )
     }
     return (
@@ -91,6 +89,7 @@ const App = () => {
   
   const getCountry = (name) => {
     setFilterData(name)
+    setWeather([])
   }
 
   const handleFilter = (event) => {
