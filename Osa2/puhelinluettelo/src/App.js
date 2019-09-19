@@ -111,8 +111,8 @@ const App = () => {
         if (typeof isOnList !== 'undefined' && isOnList.name === newName) {
             const result = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
             if (result) {
-                const person = persons.filter(p => p.id === isOnList.id)
-                const changendPerson = { ...person, name: isOnList.name, number: newNumber}
+                const person = persons.find(p => p.id === isOnList.id)
+                const changendPerson = { ...person, number: newNumber}
                 personService
                   .update(isOnList.id, changendPerson)
                   .then(updatetPerson => {
@@ -129,12 +129,14 @@ const App = () => {
                 name: newName,
                 number: newNumber
             }
-            console.log('???')
             personService
               .create(nameObject)
               .then(returnedNote => {
                 showMessage(`Added ${newName}`)  
                setPersons(persons.concat(returnedNote))
+               }).catch(response => {
+                   console.log(response.data)
+                   showErrorMessage('Name or number is missing')
                })
         }    
     }
