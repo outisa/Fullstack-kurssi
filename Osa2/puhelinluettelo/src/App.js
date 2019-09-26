@@ -45,7 +45,6 @@ const Persons = (props) => {
 const Notification = ( { errorMessage, message } ) => {
 
     if (errorMessage === null & message === null) {
-        console.log('??')
         return null
     } else if (message === null) {
         return (
@@ -59,8 +58,7 @@ const Notification = ( { errorMessage, message } ) => {
               {message}
             </div>
         )
-    }
-    
+    }    
 }
 
 const App = () => {
@@ -97,7 +95,7 @@ const App = () => {
         setTimeout(() => {
             setMessage(null)
             setErrorMessage(null)
-            }, 3000);
+            }, 5000);
         SetNewName('')
         SetNewNumber('')  
     }
@@ -131,12 +129,11 @@ const App = () => {
             }
             personService
               .create(nameObject)
-              .then(returnedNote => {
+              .then(returnedPerson => {
                 showMessage(`Added ${newName}`)  
-               setPersons(persons.concat(returnedNote))
-               }).catch(response => {
-                   console.log(response.data)
-                   showErrorMessage('Name or number is missing')
+               setPersons(persons.concat(returnedPerson))
+               }).catch(error => {
+                   showErrorMessage(error.response.data.error)
                })
         }    
     }
@@ -154,7 +151,8 @@ const App = () => {
                 setPersons(persons.filter(p => p.id !== person.id))
             })
             .catch(error => {
-                showErrorMessage(`${person.name} has already been removed from server.`)
+                console.log(error.error)
+                showErrorMessage(`${person.name} has already been removed from server.`, error.error)
                 setPersons(persons.filter(p => p.id !== person.id))
             })
         } 
