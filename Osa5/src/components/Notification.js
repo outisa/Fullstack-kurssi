@@ -1,5 +1,5 @@
 import React from 'react'
-import '../index.css';
+import '../index.css'
 
 const Notification = ( { message, errorMessage } ) => {
   if (errorMessage !== '') {
@@ -16,7 +16,6 @@ const Notification = ( { message, errorMessage } ) => {
     )
   }
   return null
-  
 }
 
 export default Notification
