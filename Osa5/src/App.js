@@ -6,17 +6,18 @@ import LoginForm from './components/LoginForm'
 import CreateBlogForm from './components/CreateBlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import { useField } from './hooks'
 
 function App() {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [author, setAuthor] = useState('')
-  const [title, setTitle] = useState('')
-  const [url, setUrl] = useState('')
+  const author = useField('text')
+  const title = useField('text')
+  const url = useField('url')
   const [errorMessage, setErrorMessage] = useState('')
   const [message, setMessage] = useState('')
+  const usernameLogin = useField('text')
+  const passwordLogin = useField('password')
 
   useEffect(() => {
     blogService
@@ -47,18 +48,20 @@ function App() {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('logging with', username, password)
+
+    const username = usernameLogin.value
+    const password = passwordLogin.value
     try {
       const user = await loginService.login({
-        username, password,
+        username, password
       })
       window.localStorage.setItem(
         'loggedBlogAppUser', JSON.stringify(user)
       )
+      usernameLogin.reset()
+      passwordLogin.reset()
       setUser(user)
       blogService.setToken(user.token)
-      setUsername('')
-      setPassword('')
     } catch (exception) {
       setErrorMessage('Wrong username or password')
       setTimeout(() => {
@@ -83,13 +86,11 @@ function App() {
   }
 
   const loginForm = () => (
-    <Togglable buttonLabel="login">
+    <Togglable buttonLabel="sign in">
       <LoginForm
         handleLogin={handleLogin}
-        username={username}
-        handleUsernameChange={({ target }) => setUsername(target.value)}
-        password={password}
-        handlePasswordChange={({ target }) => setPassword(target.value)}
+        username= {usernameLogin}
+        password={passwordLogin}
       />
     </Togglable>
   )
@@ -100,10 +101,8 @@ function App() {
       <CreateBlogForm
         handleAddBlog={handleAddBlog}
         title={title}
-        handleTitle={({ target }) => setTitle(target.value)}
-        author={author}
-        handleAuthor={({ target }) => setAuthor(target.value)}          url={url}
-        handleUrl={({ target }) => setUrl(target.value)}
+        author={author}          
+        url={url}
       />
     </Togglable>
   )
@@ -142,21 +141,21 @@ function App() {
     event.preventDefault()
     blogForRef.current.toggleVisibility()
     const blogObject = {
-      author: author,
-      title: title,
-      url: url,
+      author: author.value,
+      title: title.value,
+      url: url.value,
     }
 
     blogService
       .create(blogObject)
       .then(returnedBlog => {
         console.log(returnedBlog)
-        setMessage(`A new blog ${title} by ${author} has been added`)
+        setMessage(`A new blog ${title.value} by ${author.value} has been added`)
         timeout()
         setBlogs(blogs.concat(returnedBlog))
-        setTitle('')
-        setAuthor('')
-        setUrl('')
+        author.reset()
+        title.reset()
+        url.reset()
       })
       .catch(error => {
         setErrorMessage(error.message, 'Validation error! Title and url required. Url must be at least 4 and title at least 1 character long')
