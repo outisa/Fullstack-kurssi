@@ -1,0 +1,55 @@
+{
+  "notes": [
+    {
+      "content": "custom-hooks are awesome!",
+      "id": 1
+    },
+    {
+      "content": "best feature ever <3",
+      "id": 2
+    },
+    {
+      "content": "Muista palauttaa tehtävät",
+      "id": 3
+    },
+    {
+      "content": "Remember exam!",
+      "id": 4
+    },
+    {
+      "content": "Be more active!",
+      "id": 5
+    },
+    {
+      "content": "This works!",
+      "id": 6
+    }
+  ],
+  "persons": [
+    {
+      "name": "mluukkai",
+      "number": "040-5483923",
+      "id": 1
+    },
+    {
+      "name": "Maija Mehiläinen",
+      "number": "040-2131333",
+      "id": 2
+    },
+    {
+      "name": "Outi S.",
+      "number": "09-09124424",
+      "id": 3
+    },
+    {
+      "name": "Matti Meikäläinen",
+      "number": "040-1233553",
+      "id": 4
+    },
+    {
+      "name": "Maija M.",
+      "number": "08-3414141",
+      "id": 5
+    }
+  ]
+}
