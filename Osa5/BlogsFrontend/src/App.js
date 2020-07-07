@@ -174,7 +174,7 @@ function App() {
         <div>
           <p>{user.name} logged in</p>
           <form onSubmit={handleLogout}>
-            <button type="submit">logout</button>
+            <button type="submit" id='logout-button'>logout</button>
           </form>
           <h2>Add new blog</h2>
           {createBlogForm()}

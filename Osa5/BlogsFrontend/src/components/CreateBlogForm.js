@@ -5,17 +5,17 @@ const CreateBlogForm = ({ handleAddBlog, title, author, url }) => (
   <form onSubmit={handleAddBlog}>
     <div>
       Title:
-      <input {...title} reset='' />
+      <input {...title} reset='' id='title' />
     </div>
     <div>
       Author:
-      <input {...author} reset='' />
+      <input {...author} reset='' id='author' />
     </div>
     <div>
       Url:
-      <input {...url} reset=''/>
+      <input {...url} reset='' id='url' />
     </div>
-    <button type="submit">Add</button>
+    <button type="submit" id='add-button' >Add</button>
   </form>
 )
 CreateBlogForm.propTypes = {
