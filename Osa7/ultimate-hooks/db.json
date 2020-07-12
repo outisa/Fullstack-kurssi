@@ -1,0 +1,42 @@
+{
+  "notes": [
+    {
+      "content": "custom-hookit aivan mahtavia",
+      "id": 1
+    },
+    {
+      "content": "paras feature ikinä <3",
+      "id": 2
+    },
+    {
+      "content": "timanttista!",
+      "id": 3614
+    },
+    {
+      "content": "Ja homma etenee.",
+      "id": 154
+    }
+  ],
+  "persons": [
+    {
+      "name": "mluukkai",
+      "number": "040-5483923",
+      "id": 1
+    },
+    {
+      "name": "dwdw",
+      "number": "123",
+      "id": 2
+    },
+    {
+      "name": "moniosaaja",
+      "number": "09-09283751",
+      "id": 99
+    },
+    {
+      "name": "Jaska Jokunen",
+      "number": "22114309193",
+      "id": 1267
+    }
+  ]
+}

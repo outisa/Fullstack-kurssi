@@ -5,9 +5,10 @@ import {
   useHistory
 }from 'react-router-dom'
 import './index.css'
+import { useField } from './hooks'
+
 
 const Anecdote = ({ anecdote }) => {
-  console.log(anecdote)
   return (
     <div>
       <h2>{anecdote.content} by {anecdote.author}</h2>
@@ -62,39 +63,45 @@ const Footer = () => (
 )
 
 const CreateNew = (props) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
  
   const history = useHistory()
   const handleSubmit = (e) => {
     e.preventDefault()
     props.addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
     history.push('/')
+  }
+  const handleReset = () => {
+    content.reset()
+    author.reset()
+    info.reset()
   }
   
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form>
         <div>
           content
-          <input name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          <input {...content} reset=''/>
         </div>
         <div>
           author
-          <input name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <input {...author} reset='' />
         </div>
         <div>
           url for more info
-          <input name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+          <input {...info} reset='' />
         </div>
-        <button>create</button>
+        <button onClick={handleSubmit}>create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   )
@@ -151,7 +158,7 @@ const App = () => {
   const match =useRouteMatch('/anecdotes/:id')
 
   const anecdote = match
-    ? anecdotes.find(a => anecdote.id === match.params.id) : 
+    ? anecdotes.find(anecdote => anecdote.id === match.params.id) : 
     null
 
   return (
