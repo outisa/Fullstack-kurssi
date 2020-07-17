@@ -1,5 +1,5 @@
-Avoimen yliopiston vuoden 2019 Full Stack -kurssitehtävien omat ratkaisuni. 
+Avoimen yliopiston vuoden 2019/2020 Full Stack -kurssitehtävien omat ratkaisuni. 
 
-[Blog -sovelluksen backend](https://github.com/outisa/FullStackOsa4)
+[Blogs -sovelluksen (aloitettu osassa 5) backend](https://github.com/outisa/FullStackOsa4)
 
 [Osa 3](https://github.com/outisa/FullStackOsa3)
