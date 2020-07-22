@@ -3,11 +3,17 @@ import { useMutation } from '@apollo/client'
 import { EDIT_AUTHOR } from '../queries'
 import Select from 'react-select'
 
-const EditForm = ({ authors }) => {
+const EditForm = ({ authors, notify }) => {
   const [name, setName] = useState('')
   const [bornYear, setYear] = useState('')
   
-  const [ editAuthor ] = useMutation(EDIT_AUTHOR)
+  const [ editAuthor ] = useMutation(EDIT_AUTHOR, {
+    onError: (error) => {
+      notify(error.graphQLErrors[0].message)
+     
+    }
+  })
+  
 
   const submit = async (event) => {
     event.preventDefault()
@@ -30,7 +36,7 @@ const EditForm = ({ authors }) => {
               options={authors}
               isSearchable={true}
               noOptionsMessage={() => null}
-              placeholder={authors[0].name}
+              placeholder={'choose name'}
               autoFocus={true}
           />
         <div>
@@ -50,8 +56,9 @@ const Authors = (props) => {
   if (!props.show) {
     return null
   }
-  const authors = props.authorResults.data.allAuthors
 
+  const authors = props.authorResults.data.allAuthors
+  console.log(authors)
   return (
     <div>
       <h2>authors</h2>
@@ -76,7 +83,9 @@ const Authors = (props) => {
         </tbody>
       </table>
       <br />
-      <EditForm authors={authors} />
+      {props.token ? 
+      <EditForm authors={authors} notify={props.notify} />
+      : null }
     </div>
   )
 }
