@@ -10,9 +10,12 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@apollo/client": "^3.0.2",
     "apollo-server": "^2.16.0",
+    "dotenv": "^8.2.0",
     "graphql": "^15.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.25",
+    "mongoose-unique-validator": "^2.0.3",
     "nodemon": "^2.0.4"
   }
 }
