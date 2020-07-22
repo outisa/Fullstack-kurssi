@@ -5,7 +5,8 @@ const Author = require('./models/author')
 const Book = require('./models/book')
 const config = require('./config')
 const User = require('./models/user')
-
+const { PubSub } = require('apollo-server')
+const pubsub = new PubSub()
 const mongoUrl = config.MONGODB_URI
 
 const jwt = require('jsonwebtoken')
@@ -23,6 +24,9 @@ mongoose.connect(mongoUrl, { useNewUrlParser: true } )
   })
 
 const typeDefs = gql`
+  type Subscription {
+    bookAdded: Book!
+  }
   type Genre {
     genre: String!
   }
@@ -37,7 +41,7 @@ const typeDefs = gql`
     name: String!
     born: Int
     id: ID!
-    books: [Book!]!
+    bookCount: Int!
   }
   type User {
     username: String!
@@ -97,8 +101,8 @@ const resolvers = {
         
     },
     allAuthors: async () => {
-      const authors = await Author.find({ }).populate('books')
-      return  authors 
+      const authors = await Author.find({ }).populate('bookCount')
+      return  authors
     },
     me: (root, args, context) => {
       return context.currentUser
@@ -107,6 +111,8 @@ const resolvers = {
       return await Genre.find({})
     }
   },
+
+
   Mutation: {
     addBook: async (root, args, context) => {
       const book = await Book.findOne({ title: args.title })
@@ -142,7 +148,7 @@ const resolvers = {
           throw new UserInputError('lenght of the author must be at least 5 charackter long')
         }
       }  
-      const newBook = new Book({...args, author: author})
+      let newBook = new Book({...args, author: author})
       try {
         await newBook.save()
       } catch (error) {
@@ -152,8 +158,11 @@ const resolvers = {
       }
       author.books = author.books.concat(newBook)
       author.save()
-  
-      return  await Book.findOne({ title: args.title }).populate('author', {name:1})
+      
+      newBook =await Book.findOne({ title: args.title }).populate('author', {name:1})
+      console.log(newBook)
+      pubsub.publish('BOOK_ADDED', { bookAdded: newBook })
+      return  newBook
     },
     editAuthor: async (root, args, context) => {
       const currentUser = context.currentUser
@@ -198,6 +207,11 @@ const resolvers = {
       return { value: jwt.sign(userForToken, JWT_SECRET) }
     },
   },
+  Subscription: {
+    bookAdded: {
+      subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
+    }
+  }
 }
 
 const server = new ApolloServer({
@@ -215,6 +229,7 @@ const server = new ApolloServer({
   }
 })
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
   console.log(`Server ready at ${url}`)
+  console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })
