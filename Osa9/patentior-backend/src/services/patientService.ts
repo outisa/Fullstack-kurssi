@@ -19,7 +19,7 @@ const addPatient = (entry: NewPatient): Patient => {
   };
   patients.push(newPatient);
   return newPatient;
-}
+};
 
 export default {
   getPatientsWithoutSnn,
