@@ -23,5 +23,5 @@ const Part: React.FC<Parts> = ({ part }) => {
     default:
       return assertNever(part);      
   }
-}
+};
 export default Part;

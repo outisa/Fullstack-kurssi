@@ -1,17 +1,56 @@
-export type PatientDataWithoutSsn = Omit<Patient, 'ssn'>;
-
+export type PublicPatient = Omit<Patient, 'ssn' | 'entries'>;
+export type Entry = HealthCheckEntry | HospitalEntry | OccupationalHealthcareEntry;
+export type NewPatient = Omit<Patient, 'id'>;
+export type NewHealthCheck = Omit< HealthCheckEntry, 'id'>;
+export type NewHospitalEntry = Omit< HospitalEntry, 'id'>;
+export type NewOccupational = Omit<OccupationalHealthcareEntry, 'id'>;
 export enum Gender {
   Male = 'male',
   Female = 'female',
   Other = 'other',
 }
 
-export type NewPatient = Omit<Patient, 'id'>;
+export enum HealthCheckRating {
+  Healthy = 0,
+  LowRisk = 1,
+  HighRisk = 2,
+  CriticalRisk = 3
+}
 
-export interface Diagnose { 
+interface HealthCheckEntry extends BaseEntry {
+  type: "HealthCheck";
+  healthCheckRating: HealthCheckRating;
+}
+
+interface HospitalEntry extends BaseEntry {
+  type: "Hospital",
+  discharge: {
+    dischargeDate: string;
+    criteria: string;
+  }
+}
+
+interface OccupationalHealthcareEntry extends BaseEntry {
+  type: "OccupationalHealthcare",
+  employerName: string;
+  sickLeave?: {
+    startDate: string;
+    endDate: string;
+  }
+}
+
+export interface Diagnosis { 
   code: string; 
   name: string; 
   latin?: string;
+}
+
+export interface BaseEntry {
+  id: string;
+  description: string;
+  date: string;
+  specialist: string;
+  diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
 export interface Patient {
@@ -21,4 +60,5 @@ export interface Patient {
   ssn: string;
   gender: Gender;
   occupation: string;
+  entries?: Entry[];
 }
