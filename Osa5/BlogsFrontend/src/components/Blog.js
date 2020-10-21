@@ -47,15 +47,15 @@ const Blog = ({ loggedIn }) => {
   const usersBlog = blog.user.username === loggedIn.username
   return (
     <div id='blogTable'>
-      <div  >
-        <h2>{blog.title}, made by {blog.author}</h2>
+      <div >
+        <h2 data-testid="blog-data">{blog.title}, made by {blog.author}</h2>
       </div>
       <div >
         <br />
         <a href={blog.url}>{blog.url}</a>
         <br />
         <p>likes: {blog.likes} </p>
-        <Button variant='info' onClick={handleLikes} id='like-button' >like</Button>
+        <Button variant='info' onClick={handleLikes} id='like-button' data-testid="like">like</Button>
         <p>Added by {blog.user.name}</p>
         {usersBlog ?
           <Button variant='danger' onClick={handleRemove} id='remove-button' >remove blog</Button> :

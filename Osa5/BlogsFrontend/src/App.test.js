@@ -1,30 +1,32 @@
 import React from 'react'
-import { render, waitForElement } from '@testing-library/react'
+import { waitForElement } from '@testing-library/react'
+import { render } from './test_utils'
 jest.mock('./services/blogs')
 import App from './App'
 
 describe('<App />', () => {
   test('if no user logged, blogs are not rendered', async () => {
-    const component = render(
-      <App />
+    render(
+      <App />,
+      { state: { loggedIn: {} } },
     )
-    component.rerender(<App />)
+  
     await waitForElement(
-      () => component.getByText('sign in')
+      () => screen.getByText('sign in')
     )
-    expect(component.container).toHaveTextContent(
+    expect(screen).toHaveTextContent(
       'Login'
     )
-    expect(component.container).toHaveTextContent(
+    expect(screen).toHaveTextContent(
       'Username:'
     )
-    expect(component.container).toHaveTextContent(
+    expect(screen).toHaveTextContent(
       'Password:'
     )
-    expect(component.container).toHaveTextContent(
+    expect(screen).toHaveTextContent(
       'login'
     )
-    expect(component.container).toHaveTextContent(
+    expect(screen).toHaveTextContent(
       'cancel'
     )
   })
@@ -35,17 +37,13 @@ describe('<App />', () => {
       name: 'Matti Meikäläinen'
     }
 
-    localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
-    const component = render(
-      <App />
-    )
-
-    component.rerender(<App />)
+    window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user))
+ 
     await waitForElement(
-      () => component.container.querySelector('.togglableContent')
+      () => container.querySelector('.togglableContent')
     )
 
-    const blogs = component.container.querySelectorAll('.togglableContent')
+    const blogs = container.querySelectorAll('.togglableContent')
 
     expect(blogs.length).toBe(3)
     expect(component.container).toHaveTextContent(
