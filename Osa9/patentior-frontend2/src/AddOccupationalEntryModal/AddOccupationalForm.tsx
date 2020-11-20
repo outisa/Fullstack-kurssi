@@ -38,12 +38,12 @@ const validationSchema= Yup.object().shape({
       const correct = moment(originalvalue, "YYYY-MM-DD", true).toDate();
       return correct;
       })
-      .min(new Date(), 'Date can not be in past!')
+      .min(new Date(), 'Date can not be in the past!')
       .notRequired(),
     endDate: Yup.date().transform((_value, originalvalue) =>{
       const correct = moment(originalvalue, "YYYY-MM-DD", true).toDate();
       return correct;
-      }).min(Yup.ref('startDate'), 'End date must be later than start date. Please scheck both fields!')
+      }).min(Yup.ref('startDate'), 'End date must be later than the start date. Please check both fields!')
       .notRequired()
   })
 });
